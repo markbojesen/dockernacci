@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/fibonacci")
 public class FibonacciController {
@@ -19,7 +22,14 @@ public class FibonacciController {
     }
 
     @GetMapping("/recursive")
-    public String checkFibonacciRecursivelyController(@RequestParam int fibPosition) {
-        return "Fibonacci number of the Nth position is: " + service.checkNthFibonacciNumberRecursively(fibPosition);
+    public Map<String, Long> calculateFibonacci(@RequestParam long nthNumber) {
+        long fibonacciResult = service.calculateFibonacci(nthNumber);
+
+        // Create a response map with the nth number and calculated Fibonacci result
+        Map<String, Long> response = new HashMap<>();
+        response.put("nthNumber", nthNumber);
+        response.put("fibonacciResult", fibonacciResult);
+
+        return response;
     }
 }

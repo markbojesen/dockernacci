@@ -2,23 +2,39 @@ package com.mark.dockerfibonacci.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import static java.lang.String.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class FibonacciService {
 
+    private final Map<Long, Long> cachedFibonacciNumbers = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public int checkNthFibonacciNumberRecursively(int number) {
-        if (number <= 1) {
-            return number;
-        } else if (number >= 45) {
-            logger.error("Number provided is too large: {}", number);
-            throw new IllegalArgumentException("Number provided is too large: " + number);
+    @Cacheable(value = "fibonacciCache", key = "#nthNumber")
+    public long calculateFibonacci(long nthNumber) {
+        if (cachedFibonacciNumbers.containsKey(nthNumber)) {
+            logger.info("Key cached in Redis: " + nthNumber);
+            return cachedFibonacciNumbers.get(nthNumber);
         }
 
-        return checkNthFibonacciNumberRecursively(number - 1) + checkNthFibonacciNumberRecursively(number - 2);
+        long result;
+        if (nthNumber <= 1) {
+            result = nthNumber;
+        } else {
+            result = calculateFibonacci(nthNumber - 1) + calculateFibonacci(nthNumber - 2);
+        }
+
+        cachedFibonacciNumbers.put(nthNumber, result);
+        return result;
+    }
+
+    @CacheEvict(value = "fibonacciCache", key = "#nthNumber")
+    public void clearCache(long nthNumber) {
+        cachedFibonacciNumbers.remove(nthNumber);
     }
 }
