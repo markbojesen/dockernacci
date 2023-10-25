@@ -18,7 +18,7 @@ public class FibonacciService {
     @Cacheable(value = "fibonacciCache", key = "#nthNumber")
     public long calculateFibonacci(long nthNumber) {
         if (cachedFibonacciNumbers.containsKey(nthNumber)) {
-            logger.info("Key cached in Redis: " + nthNumber);
+            logger.info("Key cached: {}", nthNumber);
             return cachedFibonacciNumbers.get(nthNumber);
         }
 
@@ -36,5 +36,6 @@ public class FibonacciService {
     @CacheEvict(value = "fibonacciCache", key = "#nthNumber")
     public void clearCache(long nthNumber) {
         cachedFibonacciNumbers.remove(nthNumber);
+        logger.info("Cache cleared for key {}", nthNumber);
     }
 }

@@ -23,13 +23,15 @@ public class FibonacciController {
 
     @GetMapping("/recursive")
     public Map<String, Long> calculateFibonacci(@RequestParam long nthNumber) {
-        long fibonacciResult = service.calculateFibonacci(nthNumber);
-
-        // Create a response map with the nth number and calculated Fibonacci result
         Map<String, Long> response = new HashMap<>();
         response.put("nthNumber", nthNumber);
-        response.put("fibonacciResult", fibonacciResult);
+        response.put("fibonacciResult", service.calculateFibonacci(nthNumber));
 
         return response;
+    }
+
+    @GetMapping("/clear")
+    public void clearCache(@RequestParam long nthNumber) {
+        service.clearCache(nthNumber);
     }
 }
